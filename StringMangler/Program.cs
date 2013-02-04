@@ -23,9 +23,21 @@ namespace StringMangler
             {
                 Console.WriteLine("\nStringMangler" + "\n" +
                                   "---------------\n\n" +
+                                  "Error: incorrect number of parameters (" + args.Length + ")\n\n" +
                                   "\tUSAGE: smangler.exe source_dir dest_dir [strings_filter]\n" +
-                                  "Please refer to https://github.com/imspa/StringMangler/blob/master/README.md \n" +
+                                  "\nPlease refer to https://github.com/imspa/StringMangler/blob/master/README.md \n" +
                                   "for further informations.\n\n");
+
+                if (VERBOSE)
+                {
+                    Console.WriteLine("Command line arguments:");
+                    int i = 0;
+                    foreach (var s in args)
+                    {
+                        Console.WriteLine("Argument {0}: {1}", i, args[i]);
+                        i++;
+                    }
+                }
 
                 Environment.ExitCode = -1;
                 return;
@@ -48,6 +60,14 @@ namespace StringMangler
                 return;
             }
 
+            if (Path.GetFullPath(args[0]).Equals(Path.GetFullPath(args[1])))
+            {
+                Console.WriteLine("The origin and destination directories are the same");
+
+                Environment.ExitCode = -4;
+                return;
+            }
+
             // Use the default regex filter of "*" if none is specified
             string regexPattern = args.Length == 3 ? args[2] : null;
 
@@ -63,7 +83,7 @@ namespace StringMangler
                 {
                     Console.WriteLine("The specified regex pattern is not valid. {0}", e.Message);
 
-                    Environment.ExitCode = -4;
+                    Environment.ExitCode = -5;
                     return;
                 }
             }
