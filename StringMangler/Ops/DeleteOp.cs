@@ -64,7 +64,7 @@ namespace StringMangler.Ops
             foreach (var kvp in srcDocs)
             {
                 if (Program.VERBOSE)
-                    Console.WriteLine("\t> Removing matching strings from file \"{0}\"", kvp.Key);
+                    Console.Write("   > Removing matching strings from file \"{0}\"...", kvp.Key);
 
                 XmlDocument doc = kvp.Value;
                 var nodesToDeleteList = new SortedList<XmlElement, XmlNode>();
@@ -77,10 +77,21 @@ namespace StringMangler.Ops
                     }
 
                     string name = ((XmlElement) node).GetAttribute("name");
+                    if (System.Diagnostics.Debugger.IsAttached) Console.Write("\n      Checking string name {0}", name);
+
                     if (regex.IsMatch(name))
                     {
                         if (node.ParentNode != null) nodesToDeleteList.Add((XmlElement) node, node.ParentNode);
                     }
+                }
+
+                if (Program.VERBOSE)
+                {
+                    Console.WriteLine("Strings to delete: {0}", nodesToDeleteList.Count);
+                }
+                else
+                {
+                    Console.Write("\n");
                 }
 
                 // Ugly double-cycle to avoid long and boring refactoring the loop above
@@ -88,7 +99,7 @@ namespace StringMangler.Ops
                 {
                     if (Program.VERBOSE)
                     {
-                        Console.WriteLine("\t\t> Removing string {0}...", nodeKvp.Key.GetAttribute("name"));
+                        Console.WriteLine("      > Removing string {0}...", nodeKvp.Key.GetAttribute("name"));
                     }
 
                     nodeKvp.Value.RemoveChild(nodeKvp.Key);

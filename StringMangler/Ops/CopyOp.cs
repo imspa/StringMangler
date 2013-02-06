@@ -111,7 +111,7 @@ namespace StringMangler.Ops
                 }
 
                 if (Program.VERBOSE)
-                    Console.WriteLine("\t> Copying string \"{0}\" from directory \"{1}\"", stringName, directory.Name);
+                    Console.WriteLine("   > Copying string \"{0}\" from directory \"{1}\"", stringName, directory.Name);
 
                 // Retrieve the corresponding destination file
                 XmlDocument destXmlDoc = GetDestXmlDocForSrcFile(directory, destPath);
@@ -151,11 +151,11 @@ namespace StringMangler.Ops
                     var stringNode = (XmlElement) node;
 
                     if (Program.VERBOSE)
-                        Console.WriteLine("\t\t> Parsing string \"{0}\"", stringNode.GetAttribute("name"));
+                        Console.WriteLine("      > Parsing string \"{0}\"", stringNode.GetAttribute("name"));
 
                     if (stringName.Equals(stringNode.GetAttribute("name")))
                     {
-                        if (Program.VERBOSE) Console.WriteLine("\t\t\t*** FOUND ***");
+                        if (Program.VERBOSE) Console.WriteLine("         *** FOUND ***");
                         return stringNode.InnerText;
                     }
                 }
