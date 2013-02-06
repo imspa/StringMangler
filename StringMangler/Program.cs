@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using System.IO;
+using System.Reflection;
 using System.Text.RegularExpressions;
 using StringMangler.Ops;
 
@@ -174,7 +175,8 @@ namespace StringMangler
             if (op == Operation.Invalid)
             {
                 Console.WriteLine("\nStringMangler" + "\n" +
-                                  "---------------\n\n" +
+                                  "-------------\n" +
+                                  "Version: " + Assembly.GetEntryAssembly().GetName().Version + "\n\n" +
                                   "Error: " + errReason + "\n\n" +
                                   "  USAGE:\n" +
                                   "   [mono] smangler.exe c[opy] source_dir dest_dir [strings_filter]\n" +

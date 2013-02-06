@@ -67,21 +67,29 @@ namespace StringMangler.Ops
                     Console.Write("   > Removing matching strings from file \"{0}\"...", kvp.Key);
 
                 XmlDocument doc = kvp.Value;
-                var nodesToDeleteList = new SortedList<XmlElement, XmlNode>();
+                var nodesToDeleteList = new SortedList<int, XmlElement>();
 
                 foreach (XmlNode node in doc.GetElementsByTagName("string"))
                 {
-                    if (typeof (XmlElement) != node.GetType())
+                    try
                     {
-                        continue;
+                        if (typeof(XmlElement) != node.GetType())
+                        {
+                            continue;
+                        }
+
+                        string name = ((XmlElement)node).GetAttribute("name");
+                        if (System.Diagnostics.Debugger.IsAttached) Console.Write("\n      Checking string name {0}", name);
+
+                        if (regex.IsMatch(name))
+                        {
+                            if (node.ParentNode != null) nodesToDeleteList.Add(node.GetHashCode(), (XmlElement)node);
+                        }
                     }
-
-                    string name = ((XmlElement) node).GetAttribute("name");
-                    if (System.Diagnostics.Debugger.IsAttached) Console.Write("\n      Checking string name {0}", name);
-
-                    if (regex.IsMatch(name))
+                    catch (Exception e)
                     {
-                        if (node.ParentNode != null) nodesToDeleteList.Add((XmlElement) node, node.ParentNode);
+                        Console.Error.WriteLine("   ERROR while parsing file {0}. {1}\n      {2}\n\n",
+                            kvp.Key, e.Message, e.StackTrace);
                     }
                 }
 
@@ -99,10 +107,18 @@ namespace StringMangler.Ops
                 {
                     if (Program.VERBOSE)
                     {
-                        Console.WriteLine("      > Removing string {0}...", nodeKvp.Key.GetAttribute("name"));
+                        Console.WriteLine("      > Removing string {0}...", nodeKvp.Value.GetAttribute("name"));
                     }
 
-                    nodeKvp.Value.RemoveChild(nodeKvp.Key);
+                    try
+                    {
+                        nodeKvp.Value.ParentNode.RemoveChild(nodeKvp.Value);
+                    }
+                    catch (Exception e)
+                    {
+                        Console.Error.WriteLine("      ERROR while removing string {0}. {1}\n      {2}\n\n",
+                            nodeKvp.Value.GetAttribute("name"), e.Message, e.StackTrace);
+                    }
                 }
             }
         }
